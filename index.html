@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HFT Order Flow & SOXL Playbook Terminal</title>
+    <title>Enterprise Split-Frame Volatility & Matrix Terminal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Modern scrollbar configuration for premium clean data feeds */
         .custom-scroll::-webkit-scrollbar { width: 4px; }
         .custom-scroll::-webkit-scrollbar-track { background: #0f172a; }
         .custom-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 2px; }
@@ -14,156 +13,274 @@
 </head>
 <body class="bg-[#0f172a] text-[#f8fafc] min-h-screen font-sans antialiased selection:bg-blue-500/30" id="body-container">
 
-    <div class="max-w-6xl mx-auto p-4 md:p-6 space-y-4">
+    <div class="max-w-[1600px] mx-auto p-4 md:p-6 space-y-4">
         
         <header class="border-b border-[#334155] pb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
                 <div class="flex items-center space-x-2">
                     <span class="h-2.5 w-2.5 bg-blue-500 rounded-sm"></span>
-                    <h1 class="text-xl font-bold tracking-tight text-[#ffffff] font-mono">Trading Monitor</h1>
+                    <h1 class="text-xl font-bold tracking-tight text-[#f8fafc] font-mono">Algo V8</h1>
                 </div>
-                <p class="text-sm text-slate-300 font-mono mt-0.5 font-medium">HFT Order Signals</p>
+                
             </div>
             <div id="connection-status" class="px-3 py-1 text-xs font-mono font-bold uppercase rounded border border-[#334155] bg-[#1e293b] text-slate-300 transition-all">
                 SYSTEM IDLE // DISCONNECTED
             </div>
         </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+     
+
+        <div class="grid grid-cols-1 xl:grid-cols-4 gap-4 items-start">
             
-            <div class="bg-[#1e293b] p-4 rounded border border-[#334155] space-y-3 shadow-sm flex flex-col justify-between">
-                <div class="flex flex-col space-y-3">
-                    <div class="text-xs font-bold font-mono text-blue-400 uppercase tracking-wider flex items-center justify-between">
-                        <span>01 // EXCHANGE LINK</span>
-                        <span class="text-xs text-slate-300">WSS://FEED</span>
-                    </div>
-                    <div class="space-y-2">
-                        <div>
-                            <label class="block text-xs font-mono font-medium text-slate-300 mb-1.5 uppercase tracking-wide">Finnhub Private Token</label>
-                            <input type="password" id="api-key" placeholder="Enter authentication token..." class="w-full bg-[#0f172a] border border-[#334155] rounded px-3 py-1.5 text-xs font-mono text-blue-400 focus:outline-none focus:border-blue-500 transition-colors" />
-                        </div>
-                        <div>
-                            <label class="block text-xs font-mono font-medium text-slate-300 mb-1.5 uppercase tracking-wide">Target Security Ticker</label>
-                            <input type="text" id="ticker-input" value="SOXL" class="w-full bg-[#0f172a] border border-[#334155] rounded px-3 py-1.5 text-xs font-mono uppercase font-bold text-[#f8fafc] focus:outline-none focus:border-blue-500 transition-colors" />
-                        </div>
-                    </div>
-                </div>
-                <button onclick="initializeWebSocket()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-mono font-medium py-1.5 px-4 rounded text-xs tracking-wider transition-colors shadow-sm uppercase mt-3">
-                    Mount Pipeline Stream
-                </button>
-            </div>
-
-            <div class="bg-[#1e293b] p-4 rounded border border-[#334155] space-y-3 shadow-sm flex flex-col">
-                <div class="text-xs font-bold font-mono text-[#787b86] uppercase tracking-wider flex items-center justify-between">
-                    <span>02 // BOOK INVENTORY</span>
-                    <span class="text-xs text-slate-300">COST_BASIS</span>
-                </div>
-                <div class="space-y-2 flex-grow">
-                    <div>
-                        <label class="block text-xs font-mono font-medium text-slate-300 mb-1.5 uppercase tracking-wide">Execution Unit Price ($)</label>
-                        <input type="number" id="entry-price-input" step="0.01" placeholder="0.00" oninput="updatePositionMetrics()" class="w-full bg-[#0f172a] border border-[#334155] rounded px-3 py-1.5 text-xs font-mono text-amber-400 focus:outline-none focus:border-blue-500 transition-colors" />
-                    </div>
-                    <div>
-                        <label class="block text-xs font-mono font-medium text-slate-300 mb-1.5 uppercase tracking-wide">Position Quantity (Lots)</label>
-                        <input type="number" id="position-size-input" step="1" placeholder="0" oninput="updatePositionMetrics()" class="w-full bg-[#0f172a] border border-[#334155] rounded px-3 py-1.5 text-xs font-mono text-[#f8fafc] focus:outline-none focus:border-blue-500 transition-colors" />
-                    </div>
-                </div>
-                <p class="text-xs text-slate-300 font-mono italic leading-relaxed pt-3">
-                    Integrated ledger engine parses incoming prints against inventory limits automatically.
-                </p>
-            </div>
-
-            <div class="bg-[#1e293b] p-4 rounded border border-[#334155] space-y-4 shadow-sm">
-                <div class="text-xs font-bold font-mono text-[#787b86] uppercase tracking-wider flex items-center justify-between">
-                    <span>03 // SENSITIVITY CALIBRATION</span>
-                    <span class="text-xs text-slate-300">THRESH_LIMIT</span>
-                </div>
-                <div class="space-y-4 pt-1">
-                    <div>
-                        <div class="flex justify-between text-xs font-mono text-slate-300 mb-2 uppercase tracking-wide font-medium">
-                            <span id="label-threshold">Exhaustion Bound: 4,000</span>
-                        </div>
-                        <input type="range" id="input-threshold" min="500" max="15000" step="250" value="4000" oninput="document.getElementById('label-threshold').innerText = 'Exhaustion Bound: ' + parseInt(this.value).toLocaleString()" class="w-full accent-blue-500 bg-[#0f172a] rounded-lg cursor-pointer h-1" />
-                    </div>
+            <div class="xl:col-span-3 space-y-4">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     
-                    <div class="bg-[#0f172a] p-3 rounded border border-[#334155]/60 space-y-3 shadow-inner">
-                        <div class="text-xs font-bold font-mono text-blue-300 uppercase tracking-wider">
-                            📈 SOXL Calibration Playbook
+                    <div class="bg-[#1e293b] p-4 rounded border border-[#334155] p-5 shadow-sm flex flex-col justify-between">
+                        <div class="space-y-3">
+                            <div class="text-xs font-bold font-mono text-blue-400 uppercase tracking-wider flex items-center justify-between">
+                                <span>01 // EXCHANGE LINK</span>
+                                <span class="text-xs text-slate-300"></span>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-mono font-bold text-slate-200 mb-1.5 uppercase tracking-wide">Finnhub Private Token</label>
+                                <input type="password" id="api-key" placeholder="Enter token..." class="w-full bg-[#0f172a] border border-[#334155] rounded px-2.5 py-1.5 text-xs font-mono text-blue-400 focus:outline-none focus:border-blue-500 transition-colors" />
+                            </div>
+                            <div>
+                                <label class="block text-xs font-mono font-bold text-slate-200 mb-1.5 uppercase tracking-wide">Target Ticker</label>
+                                <input type="text" id="ticker-input" value="SOXL" class="w-full bg-[#0f172a] border border-[#334155] rounded px-2.5 py-1.5 text-xs font-mono uppercase font-bold text-[#f8fafc] focus:outline-none focus:border-blue-500 transition-colors" />
+                            </div>
                         </div>
-                        <div class="space-y-2.5 font-mono text-xs text-slate-300">
-                            <div class="flex items-start space-x-2">
-                                <span class="block h-3 w-3 bg-[#ef4444] rounded-full mt-0.5 border border-slate-700"></span>
-                                <div>
-                                    <p class="text-[#f8fafc] font-medium">The Opening <span class="text-slate-400 font-normal">(9:30 AM – 10:15 AM EST)</span></p>
-                                    <p class="text-xs text-blue-400 font-medium">Setting: 7,500+</p>
-                                </div>
+                        <button onclick="initializeWebSocket()" class="w-full bg-blue-600 hover:bg-white-700 text-white font-mono font-medium py-1.5 px-3 rounded text-[11px] tracking-wider transition-colors shadow-sm uppercase mt-4">
+                            Mount Data Stream
+                        </button>
+                    </div>
+
+                    <div class="bg-[#1e293b] p-4 rounded border border-[#334155] p-5 shadow-sm flex flex-col justify-between">
+                        <div class="space-y-3">
+                            <div class="text-xs font-bold font-mono text-slate-400 uppercase tracking-wider">
+                                <span>02 // USER POSITION LEDGER</span>
                             </div>
-                            <div class="flex items-start space-x-2">
-                                <span class="block h-3 w-3 bg-amber-400 rounded-full mt-0.5 border border-slate-700"></span>
-                                <div>
-                                    <p class="text-[#f8fafc] font-medium">Midday Grind <span class="text-slate-400 font-normal">(11:30 AM – 2:30 PM EST)</span></p>
-                                    <p class="text-xs text-blue-400 font-medium">Setting: 2,500 to 3,500</p>
-                                </div>
+                            <div>
+                                <label class="block text-xs font-mono font-bold text-slate-200 mb-1.5 uppercase tracking-wide">Entry Price ($)</label>
+                                <input type="number" id="entry-price-input" step="0.01" placeholder="0.00" oninput="updatePositionMetrics()" class="w-full bg-[#0f172a] border border-[#334155] rounded px-2.5 py-1.5 text-xs font-mono text-amber-400 focus:outline-none focus:border-blue-500 transition-colors" />
                             </div>
-                            <div class="flex items-start space-x-2">
-                                <span class="block h-3 w-3 bg-[#10b981] rounded-full mt-0.5 border border-slate-700"></span>
-                                <div>
-                                    <p class="text-[#f8fafc] font-medium">Power Hour <span class="text-slate-400 font-normal">(3:15 PM – 4:00 PM EST)</span></p>
-                                    <p class="text-xs text-blue-400 font-medium">Setting: 5,500 to 7,000</p>
-                                </div>
+                            <div>
+                                <label class="block text-xs font-mono font-bold text-slate-200 mb-1.5 uppercase tracking-wide">Position Quantity (Lots)</label>
+                                <input type="number" id="position-size-input" value="100" step="1" oninput="updatePositionMetrics()" class="w-full bg-[#0f172a] border border-[#334155] rounded px-2.5 py-1.5 text-xs font-mono text-[#f8fafc] focus:outline-none focus:border-blue-500 transition-colors" />
                             </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-[#1e293b] p-4 rounded border border-[#334155] space-y-2 shadow-sm flex flex-col justify-between">
+                        <div class="space-y-2">
+                            <div class="text-xs font-bold font-mono text-blue-400 uppercase tracking-wider flex items-center justify-between">
+                                <span>03 // Volatiliti Mittigation</span>
+                                <span class="text-xs text-slate-300">AUTO</span>
+                            </div>
+                            
+                            <div class="bg-[#0f172a] p-2 rounded border border-[#334155]/60 font-mono text-xs text-slate-300">
+                                <span class="text-[#64748b] block text-[10px] uppercase font-bold">Rolling Session Volatility (σ)</span>
+                                <span id="live-vol-calc" class="text-sm font-bold text-sky-400 block mt-0.5">$0.000</span>
+                                <span class="text-[10px] text-slate-400 block mt-1 leading-normal">The mathematical 'breathing room' calculated via standard deviation over the last 40 prints.</span>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-xs font-mono text-slate-200 mb-0.5 uppercase tracking-wide font-bold">
+                                    <span id="label-multiplier">Risk Band Scale: 2.0σ</span>
+                                </div>
+                                <span class="text-[11px] text-slate-400 font-mono block mb-1 leading-tight">Standard deviation multiplier used to automatically size exit targets.</span>
+                                <input type="range" id="input-multiplier" min="1.0" max="4.0" step="0.1" value="2.0" oninput="document.getElementById('label-multiplier').innerText = 'Risk Band Scale: ' + parseFloat(this.value).toFixed(1) + 'σ'; updatePositionMetrics();" class="w-full accent-blue-500 bg-[#0f172a] rounded-lg cursor-pointer h-1" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-[#1e293b] p-4 rounded border border-[#334155] space-y-3 shadow-sm flex flex-col justify-between">
+                        <div class="space-y-2">
+                            <div class="text-xs font-bold font-mono text-slate-400 uppercase tracking-wider flex items-center justify-between">
+                                <span>04 // SENSITIVITY PIPELINE</span>
+                            </div>
+                            <div class="flex justify-between text-xs font-mono text-slate-200 mb-0.5 uppercase tracking-wide font-bold">
+                                <span id="label-threshold">Exhaustion Bound: 4,000</span>
+                            </div>
+                            <span class="text-[11px] text-slate-400 font-mono block mb-1.5 leading-tight">The boundary limit required to trigger a trend reversal scalp alert. Cross-check with right manual.</span>
+                            <input type="range" id="input-threshold" min="500" max="15000" step="250" value="4000" oninput="document.getElementById('label-threshold').innerText = 'Exhaustion Bound: ' + parseInt(this.value).toLocaleString()" class="w-full accent-blue-500 bg-[#0f172a] rounded-lg cursor-pointer h-1" />
+                        </div>
+                    </div>
+                </div>
+
+                <div id="risk-alert-panel" class="hidden bg-red-950/40 p-3 rounded border border-red-500 text-center font-mono text-xs font-bold tracking-wider text-red-200 animate-pulse transition-all">
+                    ⚠️ RISK COMPLIANCE ALERT // TARGET BREACHED
+                </div>
+
+                <div id="signal-panel" class="bg-[#1e293b] p-4 rounded border border-[#334155] flex flex-col sm:flex-row items-start sm:items-center justify-between shadow-sm transition-all duration-300 gap-2">
+                    <div class="flex flex-col">
+                        <span class="text-xs font-mono text-slate-200 uppercase tracking-widest font-bold">Strategy Signal BUY \ SELL :</span>
+                        <span class="text-[11px] text-slate-400 font-mono leading-tight mt-0.5">Automated actionable advice output when rolling imbalances exceed choice thresholds.</span>
+                    </div>
+                    <div id="signal-text" class="text-sm font-bold font-mono tracking-wider text-[#f8fafc] uppercase bg-[#0f172a] px-3 py-1.5 rounded border border-[#334155]">
+                        Awaiting Stream Mount Initialization...
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 lg:grid-cols-6 gap-4">
+                    <div class="bg-[#1e293b] p-3 rounded border border-[#334155] shadow-sm">
+                        <span class="text-xs text-slate-200 font-mono block uppercase tracking-wider font-bold">Market Price</span>
+                        <span id="live-price" class="text-base font-bold font-mono tracking-tight text-[#f8fafc] mt-1 block">$0.00</span>
+                    </div>
+                    <div class="bg-[#1e293b] p-3 rounded border border-[#334155] shadow-sm">
+                        <span class="text-xs text-slate-200 font-mono block uppercase tracking-wider font-bold">Imbalance Score</span>
+                        <span id="live-imbalance" class="text-base font-bold font-mono tracking-tight text-[#f8fafc] mt-1 block">0</span>
+                    </div>
+                    <div class="bg-[#1e293b] p-3 rounded border border-[#334155] shadow-sm">
+                        <span class="text-xs text-slate-200 font-mono block uppercase tracking-wider font-bold">User Position P&L</span>
+                        <span id="live-pos-pnl" class="text-base font-bold font-mono tracking-tight text-slate-300 mt-1 block">--</span>
+                    </div>
+                    <div class="bg-[#1e293b] p-3 rounded border border-[#334155] shadow-sm">
+                        <span class="text-xs text-slate-200 font-mono block uppercase tracking-wider font-bold">User Return %</span>
+                        <span id="live-pos-pct" class="text-base font-bold font-mono tracking-tight text-slate-300 mt-1 block">--</span>
+                    </div>
+                    <div class="bg-[#1e293b] p-3 rounded border border-[#334155] shadow-sm border-l-2 border-l-[#10b981]">
+                        <span class="text-xs text-emerald-400 font-mono block uppercase tracking-wider font-bold">Current Auto TP Target</span>
+                        <span id="risk-tp-price" class="text-sm font-mono tracking-tight text-slate-100 mt-1 block">--</span>
+                        <span id="risk-tp-cash" class="text-[11px] font-mono font-bold text-[#10b981] block">--</span>
+                    </div>
+                    <div class="bg-[#1e293b] p-3 rounded border border-[#334155] shadow-sm border-l-2 border-l-[#ef4444]">
+                        <span class="text-xs text-red-400 font-mono block uppercase tracking-wider font-bold">Current Auto SL Target</span>
+                        <span id="risk-sl-price" class="text-sm font-mono tracking-tight text-slate-100 mt-1 block">--</span>
+                        <span id="risk-sl-cash" class="text-[11px] font-mono font-bold text-[#ef4444] block">--</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    
+                    <div class="bg-[#1e293b] p-4 rounded border border-[#334155] shadow-sm flex flex-col justify-between">
+                        <div class="border-b border-[#334155]/60 pb-2 flex justify-between items-center mb-2">
+                            <div class="flex flex-col">
+                                <h2 class="text-xs font-bold font-mono text-slate-300 uppercase tracking-wider">Live Time & Consolidated Tape Feed</h2>
+                                <span class="text-[11px] text-slate-400 font-mono leading-none mt-0.5">Individual buyer vs seller prints.</span>
+                            </div>
+                            <span class="h-2.5 w-2.5 rounded-full bg-slate-600 animate-pulse border border-slate-700" id="tape-status-dot"></span>
+                        </div>
+                        <div id="tape-feed" class="custom-scroll space-y-1 h-36 overflow-y-hidden font-mono text-xs text-slate-200">
+                            Terminal pipeline offline. Standby for input parameters...
+                        </div>
+                    </div>
+
+                    <div class="bg-[#1e293b] p-4 rounded border border-[#334155] shadow-sm flex flex-col justify-between">
+                        <div class="border-b border-[#334155]/60 pb-2 flex justify-between items-center mb-2">
+                            <div class="flex flex-col">
+                                <h2 class="text-xs font-bold font-mono text-blue-400 uppercase tracking-wider">05 // AUTOMATED PERFORMANCE JOURNAL</h2>
+                                <span class="text-[11px] text-slate-400 font-mono leading-none mt-0.5">Tracks how many points your configuration baseline parameters accumulate.</span>
+                            </div>
+                            <div class="flex items-center space-x-3 text-[11px] font-mono font-bold text-slate-200 bg-[#0f172a] px-2 py-0.5 rounded border border-[#334155]">
+                                <span>WINS: <span id="journal-wins" class="text-[#10b981]">0</span></span>
+                                <span>LOSSES: <span id="journal-losses" class="text-[#ef4444]">0</span></span>
+                                <span>RATE: <span id="journal-rate" class="text-sky-400">0%</span></span>
+                            </div>
+                        </div>
+                        <div id="journal-feed" class="custom-scroll space-y-1 h-36 overflow-y-hidden font-mono text-xs text-slate-300">
+                            Journal offline. Awaiting playbook validation triggers...
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div id="signal-panel" class="bg-[#1e293b] p-4 rounded border border-[#334155] flex items-center justify-between shadow-sm transition-all duration-300">
-            <span class="text-sm font-mono text-slate-300 uppercase tracking-widest font-medium">Strategy Signal Directive:</span>
-            <div id="signal-text" class="text-sm font-bold font-mono tracking-wider text-[#f8fafc] uppercase">
-                Awaiting Stream Mount Initialization...
+            <div class="bg-[#1e293b] p-4 rounded border border-[#334155] shadow-md flex flex-col space-y-4 xl:sticky xl:top-6">
+                <div class="border-b border-[#334155] pb-2">
+                    <h2 class="text-sm font-bold font-mono text-blue-400 uppercase tracking-wider flex items-center space-x-1.5">
+                        <span>🛠️ INTRADAY COORDINATION MATRIX</span>
+                    </h2>
+                    <p class="text-[11px] text-slate-300 font-mono mt-0.5 leading-tight font-medium">Dynamic rule adjustments synchronized across session regimes.</p>
+                </div>
+
+                <div class="bg-[#0f172a] p-3 rounded border border-[#334155]/50 space-y-2">
+                    <div class="flex items-center justify-between border-b border-[#334155]/40 pb-1">
+                        <span class="text-xs font-bold font-mono text-red-400 flex items-center space-x-1">
+                            <span class="h-2 w-2 rounded-full bg-red-500 inline-block mr-1"></span>
+                            <span>PHASE 1: OPENING CHAOS</span>
+                        </span>
+                        <span class="text-[10px] bg-red-950/40 text-white-300 px-1.5 py-0.5 rounded font-mono border border-red-900/40">9:30 - 10:15 EST</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 font-mono text-[11px]">
+                        <div class="bg-[#1e293b] p-1.5 rounded border border-[#334155]/30">
+                            <span class="text-[#64748b] block text-[9px] uppercase font-bold">Exhaustion Slider</span>
+                            <span class="text-red-300 font-bold text-xs">7,500+</span>
+                        </div>
+                        <div class="bg-[#1e293b] p-1.5 rounded border border-[#334155]/30">
+                            <span class="text-[#64748b] block text-[9px] uppercase font-bold">Risk Band Scale</span>
+                            <span class="text-sky-300 font-bold text-xs">2.5σ – 3.0σ</span>
+                        </div>
+                    </div>
+                    <p class="text-[11px] font-mono text-slate-300 leading-normal pt-1">
+                        High velocity volume sweeps. Use elevated thresholds to filter opening noise and wider stops to survive violent whiplash.
+                    </p>
+                </div>
+
+                <div class="bg-[#0f172a] p-3 rounded border border-[#334155]/50 space-y-2">
+                    <div class="flex items-center justify-between border-b border-[#334155]/40 pb-1">
+                        <span class="text-xs font-bold font-mono text-amber-400 flex items-center space-x-1">
+                            <span class="h-2 w-2 rounded-full bg-amber-400 inline-block mr-1"></span>
+                            <span>PHASE 2: MIDDAY GRIND</span>
+                        </span>
+                        <span class="text-[10px] bg-amber-950/40 text-white-300 px-1.5 py-0.5 rounded font-mono border border-amber-900/40">11:30 - 14:30 EST</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 font-mono text-[11px]">
+                        <div class="bg-[#1e293b] p-1.5 rounded border border-[#334155]/30">
+                            <span class="text-[#64748b] block text-[9px] uppercase font-bold">Exhaustion Slider</span>
+                            <span class="text-amber-300 font-bold text-xs">2,500 – 3,500</span>
+                        </div>
+                        <div class="bg-[#1e293b] p-1.5 rounded border border-[#334155]/30">
+                            <span class="text-[#64748b] block text-[9px] uppercase font-bold">Risk Band Scale</span>
+                            <span class="text-sky-300 font-bold text-xs">1.5σ – 2.0σ</span>
+                        </div>
+                    </div>
+                    <p class="text-[11px] font-mono text-slate-300 leading-normal pt-1">
+                        Liquidity dries up into a calm sideways channel. Lower thresholds to catch subtle blocks and use tight, minimal-risk stop brackets.
+                    </p>
+                </div>
+
+                <div class="bg-[#0f172a] p-3 rounded border border-[#334155]/50 space-y-2">
+                    <div class="flex items-center justify-between border-b border-[#334155]/40 pb-1">
+                        <span class="text-xs font-bold font-mono text-emerald-400 flex items-center space-x-1">
+                            <span class="h-2 w-2 rounded-full bg-emerald-400 inline-block mr-1"></span>
+                            <span>PHASE 3: POWER HOUR</span>
+                        </span>
+                        <span class="text-[10px] bg-emerald-950/40 text-emerald-300 px-1.5 py-0.5 rounded font-mono border border-emerald-900/40">15:15 - 16:00 EST</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 font-mono text-[11px]">
+                        <div class="bg-[#1e293b] p-1.5 rounded border border-[#334155]/30">
+                            <span class="text-[#64748b] block text-[9px] uppercase font-bold">Exhaustion Slider</span>
+                            <span class="text-emerald-300 font-bold text-xs">5,500 – 7,000</span>
+                        </div>
+                        <div class="bg-[#1e293b] p-1.5 rounded border border-[#334155]/30">
+                            <span class="text-[#64748b] block text-[9px] uppercase font-bold">Risk Band Scale</span>
+                            <span class="text-sky-300 font-bold text-xs">2.0σ Standard</span>
+                        </div>
+                    </div>
+                    <p class="text-[11px] font-mono text-slate-300 leading-normal pt-1">
+                        Closing rebalancing blocks flood the tape. Raise thresholds to block false momentum signals and normalize stops back to baseline.
+                    </p>
+                </div>
             </div>
         </div>
-
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div class="bg-[#1e293b] p-3 rounded border border-[#334155] shadow-sm">
-                <span class="text-xs text-slate-300 font-mono block uppercase tracking-wider font-medium">Last Printed Price</span>
-                <span id="live-price" class="text-xl font-bold font-mono tracking-tight text-[#f8fafc] mt-0.5 block">$0.00</span>
-            </div>
-            <div class="bg-[#1e293b] p-3 rounded border border-[#334155] shadow-sm">
-                <span class="text-xs text-slate-300 font-mono block uppercase tracking-wider font-medium">Order Imbalance Score</span>
-                <span id="live-imbalance" class="text-xl font-bold font-mono tracking-tight text-[#f8fafc] mt-0.5 block">0</span>
-            </div>
-            <div class="bg-[#1e293b] p-3 rounded border border-[#334155] shadow-sm">
-                <span class="text-xs text-slate-300 font-mono block uppercase tracking-wider font-medium">Unrealized Position P&L</span>
-                <span id="live-pos-pnl" class="text-xl font-bold font-mono tracking-tight text-slate-300 mt-0.5 block font-bold">--</span>
-            </div>
-            <div class="bg-[#1e293b] p-3 rounded border border-[#334155] shadow-sm">
-                <span class="text-xs text-slate-300 font-mono block uppercase tracking-wider font-medium">Margin Divergence %</span>
-                <span id="live-pos-pct" class="text-xl font-bold font-mono tracking-tight text-slate-300 mt-0.5 block font-bold">--</span>
-            </div>
-        </div>
-
-        <div class="bg-[#1e293b] p-4 rounded border border-[#334155] shadow-sm">
-            <div class="flex justify-between items-center mb-3 border-b border-[#334155]/60 pb-2">
-                <h2 class="text-sm font-bold font-mono text-slate-300 uppercase tracking-wider">Live Time & Consolidated Tape Feed</h2>
-                <span class="h-2.5 w-2.5 rounded-full bg-slate-600 animate-pulse border border-slate-700" id="tape-status-dot"></span>
-            </div>
-            <div id="tape-feed" class="custom-scroll space-y-1 h-32 overflow-y-hidden font-mono text-xs text-slate-200">
-                Terminal pipeline offline. Standby for input connection parameters...
-            </div>
-        </div>
-
     </div>
 
     <script>
         let socket = null;
         let rollingTradeImbalances = []; 
+        let priceHistory = []; 
         let currentMarketPrice = null;
         let lastPrice = null;
         let tapeLogs = [];
+        
+        // VIRTUAL JOURNAL BACKTRACK STATE VARIABLES
+        let virtualTrade = null; 
+        let totalWins = 0;
+        let totalLosses = 0;
+        let journalLogs = [];
 
-        // DOM nodes
+        // DOM targetfs
         const statusBadge = document.getElementById('connection-status');
         const signalPanel = document.getElementById('signal-panel');
         const signalText = document.getElementById('signal-text');
@@ -174,6 +291,29 @@
         const tapeFeed = document.getElementById('tape-feed');
         const inputThreshold = document.getElementById('input-threshold');
         const tapeStatusDot = document.getElementById('tape-status-dot');
+        
+        // Risk DOM elements
+        const riskAlertPanel = document.getElementById('risk-alert-panel');
+        const liveVolCalc = document.getElementById('live-vol-calc');
+        const riskTpPrice = document.getElementById('risk-tp-price');
+        const riskTpCash = document.getElementById('risk-tp-cash');
+        const riskSlPrice = document.getElementById('risk-sl-price');
+        const riskSlCash = document.getElementById('risk-sl-cash');
+        const inputMultiplier = document.getElementById('input-multiplier');
+
+        // Journal DOM elements
+        const journalWins = document.getElementById('journal-wins');
+        const journalLosses = document.getElementById('journal-losses');
+        const journalRate = document.getElementById('journal-rate');
+        const journalFeed = document.getElementById('journal-feed');
+
+        function getStandardDeviation(prices) {
+            if (prices.length < 2) return 0.08; 
+            const n = prices.length;
+            const mean = prices.reduce((a, b) => a + b) / n;
+            const deviationSum = prices.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0);
+            return Math.sqrt(deviationSum / (n - 1));
+        }
 
         function initializeWebSocket() {
             const apiKey = document.getElementById('api-key').value.trim();
@@ -189,6 +329,7 @@
             statusBadge.innerText = "AUTHENTICATING...";
             statusBadge.className = "px-3 py-1 text-xs font-mono font-bold uppercase rounded border border-amber-500/30 bg-[#1e293b] text-amber-500";
             tapeFeed.innerHTML = `<div class="text-slate-300 font-mono">Negotiating network transport channels for symbol: ${ticker}...</div>`;
+            journalFeed.innerHTML = `<div class="text-slate-400">Journal mounted. Standing by to auto-simulate signals...</div>`;
 
             socket = new WebSocket(`wss://ws.finnhub.io?token=${apiKey}`);
 
@@ -220,6 +361,9 @@
                 currentMarketPrice = trade.p;
                 const volume = trade.v;
                 
+                priceHistory.push(currentMarketPrice);
+                if (priceHistory.length > 40) priceHistory.shift(); 
+
                 let tradeDirection = 0;
                 if (lastPrice !== null) {
                     if (currentMarketPrice > lastPrice) tradeDirection = 1;      
@@ -234,7 +378,6 @@
 
                 if (tradeDirection !== 0) {
                     const dirLabel = tradeDirection === 1 ? "AGGR_BUY" : "AGGR_SELL";
-                    // Using TV pallet colors but made brighter for visibility on dark corporate base
                     const color = tradeDirection === 1 ? "text-[#10b981]" : "text-[#ef4444]";
                     tapeLogs.unshift(`<span class="${color}">[${dirLabel}]</span> ${volume.toLocaleString()} shares cleared at $${currentMarketPrice.toFixed(2)}`);
                     if (tapeLogs.length > 6) tapeLogs.pop();
@@ -242,6 +385,7 @@
                 }
 
                 livePriceText.innerText = `$${currentMarketPrice.toFixed(2)}`;
+                processVirtualJournalExits();
             });
 
             updatePositionMetrics();
@@ -251,14 +395,36 @@
         function updatePositionMetrics() {
             const entryPrice = parseFloat(document.getElementById('entry-price-input').value);
             const positionSize = parseFloat(document.getElementById('position-size-input').value);
+            const sigmaMultiplier = parseFloat(inputMultiplier.value);
+
+            const currentSigma = getStandardDeviation(priceHistory);
+            liveVolCalc.innerText = `$${currentSigma.toFixed(3)}`;
 
             if (isNaN(entryPrice) || isNaN(positionSize) || currentMarketPrice === null || positionSize <= 0) {
                 livePosPnL.innerText = "--";
-                livePosPnL.className = "text-xl font-bold font-mono text-slate-300";
+                livePosPnL.className = "text-base font-bold font-mono text-slate-300";
                 livePosPct.innerText = "--";
-                livePosPct.className = "text-xl font-bold font-mono text-slate-300";
+                livePosPct.className = "text-base font-bold font-mono text-slate-300";
+                riskTpPrice.innerText = "--";
+                riskTpCash.innerText = "--";
+                riskSlPrice.innerText = "--";
+                riskSlCash.innerText = "--";
+                riskAlertPanel.classList.add('hidden');
                 return;
             }
+
+            const calculatedVarianceRisk = currentSigma * sigmaMultiplier;
+            const targetSlPrice = entryPrice - calculatedVarianceRisk;
+            const targetTpPrice = entryPrice + (calculatedVarianceRisk * 2);
+
+            const totalCashRiskAmount = calculatedVarianceRisk * positionSize;
+            const totalCashRewardAmount = (calculatedVarianceRisk * 2) * positionSize;
+
+            riskTpPrice.innerText = `$${targetTpPrice.toFixed(2)}`;
+            riskTpCash.innerText = `Profit: +$${totalCashRewardAmount.toFixed(2)}`;
+            
+            riskSlPrice.innerText = `$${targetSlPrice.toFixed(2)}`;
+            riskSlCash.innerText = `Loss: -$${totalCashRiskAmount.toFixed(2)}`;
 
             const priceDifference = currentMarketPrice - entryPrice;
             const netReturn = priceDifference * positionSize;
@@ -268,11 +434,23 @@
             livePosPct.innerText = `${percentageReturn >= 0 ? '+' : ''}${percentageReturn.toFixed(2)}%`;
 
             if (netReturn >= 0) {
-                livePosPnL.className = "text-xl font-bold font-mono text-[#10b981]";
-                livePosPct.className = "text-xl font-bold font-mono text-[#10b981]";
+                livePosPnL.className = "text-base font-bold font-mono text-[#10b981]";
+                livePosPct.className = "text-base font-bold font-mono text-[#10b981]";
             } else {
-                livePosPnL.className = "text-xl font-bold font-mono text-[#ef4444]";
-                livePosPct.className = "text-xl font-bold font-mono text-[#ef4444]";
+                livePosPnL.className = "text-base font-bold font-mono text-[#ef4444]";
+                livePosPct.className = "text-base font-bold font-mono text-[#ef4444]";
+            }
+
+            if (currentMarketPrice <= targetSlPrice) {
+                riskAlertPanel.innerText = `🚨 RISK COMPLIANCE BREACHED // MANUAL ENTRY REACHED AUTOMATED STOP LIMIT (-$${totalCashRiskAmount.toFixed(2)}) AT $${currentMarketPrice.toFixed(2)}`;
+                riskAlertPanel.classList.remove('hidden');
+                riskAlertPanel.className = "block bg-red-950/60 p-3 rounded border border-red-500 text-center font-mono text-xs font-bold tracking-wider text-red-200 animate-pulse";
+            } else if (currentMarketPrice >= targetTpPrice) {
+                riskAlertPanel.innerText = `🎉 LIQUIDATION OBJECTIVE SECURED // MANUAL ENTRY MET TAKE-PROFIT REWARD TARGET (+$${totalCashRewardAmount.toFixed(2)}) AT $${currentMarketPrice.toFixed(2)}`;
+                riskAlertPanel.classList.remove('hidden');
+                riskAlertPanel.className = "block bg-emerald-950/60 p-3 rounded border border-emerald-500 text-center font-mono text-xs font-bold tracking-wider text-emerald-200 animate-pulse";
+            } else {
+                riskAlertPanel.classList.add('hidden');
             }
         }
 
@@ -283,20 +461,101 @@
             const threshold = parseInt(inputThreshold.value);
 
             if (netImbalance < -threshold) {
-                signalPanel.className = "bg-[#1e293b] p-4 rounded border border-[#10b981] flex items-center justify-between shadow-sm transition-all duration-300";
-                signalText.className = "text-sm font-bold font-mono tracking-wider text-[#10b981] uppercase animate-pulse";
+                signalPanel.className = "bg-[#1e293b] p-4 rounded border border-[#10b981] flex flex-col sm:flex-row items-start sm:items-center justify-between shadow-sm transition-all duration-300 gap-2";
+                signalText.className = "text-sm font-bold font-mono tracking-wider text-[#10b981] uppercase animate-pulse bg-[#0f172a] px-3 py-1.5 rounded border border-[#10b981]";
                 signalText.innerText = "[ EXECUTE LONG SCALP ] // SELLING EXHAUSTION DETECTED";
+                triggerVirtualJournalEntry("LONG");
             } 
             else if (netImbalance > threshold) {
-                signalPanel.className = "bg-[#1e293b] p-4 rounded border border-[#ef4444] flex items-center justify-between shadow-sm transition-all duration-300";
-                signalText.className = "text-sm font-bold font-mono tracking-wider text-[#ef4444] uppercase animate-pulse";
+                signalPanel.className = "bg-[#1e293b] p-4 rounded border border-[#ef4444] flex flex-col sm:flex-row items-start sm:items-center justify-between shadow-sm transition-all duration-300 gap-2";
+                signalText.className = "text-sm font-bold font-mono tracking-wider text-[#ef4444] uppercase animate-pulse bg-[#0f172a] px-3 py-1.5 rounded border border-[#ef4444]";
                 signalText.innerText = "[ EXECUTE SHORT SCALP ] // BUYING EXHAUSTION DETECTED";
+                triggerVirtualJournalEntry("SHORT");
             } 
             else {
-                signalPanel.className = "bg-[#1e293b] p-4 rounded border border-[#334155] flex items-center justify-between shadow-sm transition-all duration-300";
-                signalText.className = "text-sm font-bold font-mono tracking-wider text-slate-300 uppercase";
+                signalPanel.className = "bg-[#1e293b] p-4 rounded border border-[#334155] flex flex-col sm:flex-row items-start sm:items-center justify-between shadow-sm transition-all duration-300 gap-2";
+                signalText.className = "text-sm font-bold font-mono tracking-wider text-slate-300 uppercase bg-[#0f172a] px-3 py-1.5 rounded border border-[#334155]";
                 signalText.innerText = "Scanning Order Book Matrix // Market Neutral";
             }
+        }
+
+        function triggerVirtualJournalEntry(direction) {
+            if (virtualTrade !== null) return;
+
+            const sigmaMultiplier = parseFloat(inputMultiplier.value);
+            const currentSigma = getStandardDeviation(priceHistory);
+            const varianceRisk = currentSigma * sigmaMultiplier;
+            const positionSize = parseFloat(document.getElementById('position-size-input').value) || 100;
+
+            if (direction === "LONG") {
+                virtualTrade = {
+                    type: "LONG",
+                    entry: currentMarketPrice,
+                    tp: currentMarketPrice + (varianceRisk * 2),
+                    sl: currentMarketPrice - varianceRisk,
+                    size: positionSize
+                };
+            } else if (direction === "SHORT") {
+                virtualTrade = {
+                    type: "SHORT",
+                    entry: currentMarketPrice,
+                    tp: currentMarketPrice - (varianceRisk * 2),
+                    sl: currentMarketPrice + varianceRisk,
+                    size: positionSize
+                };
+            }
+
+            pushJournalLog(`🔵 Opened Virtual ${direction} position at $${currentMarketPrice.toFixed(2)} | TP: $${virtualTrade.tp.toFixed(2)} | SL: $${virtualTrade.sl.toFixed(2)}`);
+        }
+
+        function processVirtualJournalExits() {
+            if (virtualTrade === null) return;
+
+            let isClosed = false;
+            let outcome = "";
+            let pnlPoints = 0;
+
+            if (virtualTrade.type === "LONG") {
+                if (currentMarketPrice >= virtualTrade.tp) {
+                    isClosed = true; outcome = "WIN"; pnlPoints = virtualTrade.tp - virtualTrade.entry;
+                } else if (currentMarketPrice <= virtualTrade.sl) {
+                    isClosed = true; outcome = "LOSS"; pnlPoints = virtualTrade.sl - virtualTrade.entry;
+                }
+            } else if (virtualTrade.type === "SHORT") {
+                if (currentMarketPrice <= virtualTrade.tp) {
+                    isClosed = true; outcome = "WIN"; pnlPoints = virtualTrade.entry - virtualTrade.tp;
+                } else if (currentMarketPrice >= virtualTrade.sl) {
+                    isClosed = true; outcome = "LOSS"; pnlPoints = virtualTrade.entry - virtualTrade.sl;
+                }
+            }
+
+            if (isClosed) {
+                const totalCashImpact = pnlPoints * virtualTrade.size;
+                if (outcome === "WIN") {
+                    totalWins++;
+                    pushJournalLog(`✅ [${outcome}] +$${totalCashImpact.toFixed(2)} | ${virtualTrade.type} exit met at market price $${currentMarketPrice.toFixed(2)}`);
+                } else {
+                    totalLosses++;
+                    pushJournalLog(`❌ [${outcome}] -$${Math.abs(totalCashImpact).toFixed(2)} | ${virtualTrade.type} stop out met at market price $${currentMarketPrice.toFixed(2)}`);
+                }
+
+                virtualTrade = null;
+                renderJournalScoreboard();
+            }
+        }
+
+        function renderJournalScoreboard() {
+            journalWins.innerText = totalWins;
+            journalLosses.innerText = totalLosses;
+            const totalTrades = totalWins + totalLosses;
+            const rate = totalTrades > 0 ? ((totalWins / totalTrades) * 100).toFixed(0) : 0;
+            journalRate.innerText = `${rate}%`;
+        }
+
+        function pushJournalLog(msg) {
+            journalLogs.unshift(msg);
+            if (journalLogs.length > 8) journalLogs.pop();
+            journalFeed.innerHTML = journalLogs.map(log => `<div>${log}</div>`).join('');
         }
 
         function renderTape() {
