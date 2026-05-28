@@ -13,8 +13,10 @@
 </head>
 <body class="bg-[#0f172a] text-[#f8fafc] min-h-screen font-sans antialiased selection:bg-blue-500/30" id="body-container">
 
+    <!-- MASTER VIEWPORT FRAME -->
     <div class="max-w-[1600px] mx-auto p-4 md:p-6 space-y-4">
         
+        <!-- INSTITUTIONAL UTILITY TOP BAR -->
         <header class="border-b border-[#334155] pb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
                 <div class="flex items-center space-x-2">
@@ -27,31 +29,40 @@
             </div>
         </header>
 
+        <!-- MASTER TWO-COLUMN GRID LAYOUT -->
         <div class="grid grid-cols-1 xl:grid-cols-4 gap-4 items-start">
             
+            <!-- LEFT WORKSPACE COLUMN -->
             <div class="xl:col-span-3 space-y-4">
                 
+                <!-- TELEMETRY ENTRY CONTROL STATION -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     
-                    <div class="bg-[#1e293b] p-4 rounded border border-[#334155] p-5 shadow-sm flex flex-col justify-between">
-                        <div class="space-y-3">
+                    <!-- CODE PANEL 1: DATA NETWORK LINK -->
+                    <div class="bg-[#1e293b] p-4 rounded border border-[#334155] shadow-sm flex flex-col justify-between">
+                        <div class="space-y-2.5">
                             <div class="text-xs font-bold font-mono text-blue-400 uppercase tracking-wider flex items-center justify-between">
                                 <span>01 // EXCHANGE LINK</span>
                             </div>
                             <div>
-                                <label class="block text-xs font-mono font-bold text-slate-200 mb-1.5 uppercase tracking-wide">Finnhub Private Token</label>
-                                <input type="password" id="api-key" placeholder="Enter token..." class="w-full bg-[#0f172a] border border-[#334155] rounded px-2.5 py-1.5 text-xs font-mono text-blue-400 focus:outline-none focus:border-blue-500 transition-colors" />
+                                <label class="block text-[11px] font-mono font-bold text-slate-200 mb-1 uppercase tracking-wide">Alpaca API Key ID</label>
+                                <input type="text" id="api-key" placeholder="Enter Key ID..." class="w-full bg-[#0f172a] border border-[#334155] rounded px-2.5 py-1 text-xs font-mono text-blue-400 focus:outline-none focus:border-blue-500 transition-colors" />
                             </div>
                             <div>
-                                <label class="block text-xs font-mono font-bold text-slate-200 mb-1.5 uppercase tracking-wide">Target Ticker</label>
-                                <input type="text" id="ticker-input" value="SOXL" class="w-full bg-[#0f172a] border border-[#334155] rounded px-2.5 py-1.5 text-xs font-mono uppercase font-bold text-[#f8fafc] focus:outline-none focus:border-blue-500 transition-colors" />
+                                <label class="block text-[11px] font-mono font-bold text-slate-200 mb-1 uppercase tracking-wide">Alpaca Secret Key</label>
+                                <input type="password" id="secret-key" placeholder="Enter Secret Key..." class="w-full bg-[#0f172a] border border-[#334155] rounded px-2.5 py-1 text-xs font-mono text-blue-400 focus:outline-none focus:border-blue-500 transition-colors" />
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-mono font-bold text-slate-200 mb-1 uppercase tracking-wide">Target Ticker</label>
+                                <input type="text" id="ticker-input" value="SOXL" class="w-full bg-[#0f172a] border border-[#334155] rounded px-2.5 py-1 text-xs font-mono uppercase font-bold text-[#f8fafc] focus:outline-none focus:border-blue-500 transition-colors" />
                             </div>
                         </div>
-                        <button onclick="initializeWebSocket()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-mono font-medium py-1.5 px-3 rounded text-[11px] tracking-wider transition-colors shadow-sm uppercase mt-4">
+                        <button onclick="initializeWebSocket()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-mono font-medium py-1.5 px-3 rounded text-[11px] tracking-wider transition-colors shadow-sm uppercase mt-3">
                             Mount Data Stream
                         </button>
                     </div>
 
+                    <!-- CODE PANEL 2: POSITION REGISTRY -->
                     <div class="bg-[#1e293b] p-4 rounded border border-[#334155] p-5 shadow-sm flex flex-col justify-between">
                         <div class="space-y-3">
                             <div class="text-xs font-bold font-mono text-slate-400 uppercase tracking-wider">
@@ -68,6 +79,7 @@
                         </div>
                     </div>
 
+                    <!-- CODE PANEL 3: RISK METRICS (AUTO_MODE) -->
                     <div class="bg-[#1e293b] p-4 rounded border border-[#334155] space-y-2 shadow-sm flex flex-col justify-between">
                         <div class="space-y-2">
                             <div class="text-xs font-bold font-mono text-red-400 uppercase tracking-wider flex items-center justify-between">
@@ -91,6 +103,7 @@
                         </div>
                     </div>
 
+                    <!-- CODE PANEL 4: PLAYBOOK CALIBRATION SLIDER -->
                     <div class="bg-[#1e293b] p-4 rounded border border-[#334155] space-y-3 shadow-sm flex flex-col justify-between">
                         <div class="space-y-2">
                             <div class="text-xs font-bold font-mono text-slate-400 uppercase tracking-wider flex items-center justify-between">
@@ -105,10 +118,12 @@
                     </div>
                 </div>
 
+                <!-- RISK COMPLIANCE ALERT ALARMS -->
                 <div id="risk-alert-panel" class="hidden bg-red-950/40 p-3 rounded border border-red-500 text-center font-mono text-xs font-bold tracking-wider text-red-200 animate-pulse transition-all">
                     ⚠️ RISK COMPLIANCE ALERT // TARGET BREACHED
                 </div>
 
+                <!-- STRATEGY DIRECTIVE BAR -->
                 <div id="signal-panel" class="bg-[#1e293b] p-4 rounded border border-[#334155] flex flex-col sm:flex-row items-start sm:items-center justify-between shadow-sm transition-all duration-300 gap-2">
                     <div class="flex flex-col">
                         <span class="text-xs font-mono text-slate-200 uppercase tracking-widest font-bold">Strategy Signal BUY \ SELL :</span>
@@ -119,6 +134,7 @@
                     </div>
                 </div>
 
+                <!-- ACCOUNT TELEMETRY LEDGER STATS -->
                 <div class="grid grid-cols-2 lg:grid-cols-6 gap-4">
                     <div class="bg-[#1e293b] p-3 rounded border border-[#334155] shadow-sm">
                         <span class="text-xs text-slate-200 font-mono block uppercase tracking-wider font-bold">Market Price</span>
@@ -148,8 +164,10 @@
                     </div>
                 </div>
 
+                <!-- LOWER DESK: SPLIT GRID FEED & JOURNAL -->
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     
+                    <!-- LEFT PANEL: TAPE FEED -->
                     <div class="bg-[#1e293b] p-4 rounded border border-[#334155] shadow-sm flex flex-col justify-between">
                         <div class="border-b border-[#334155]/60 pb-2 flex justify-between items-center mb-2">
                             <div class="flex flex-col">
@@ -163,6 +181,7 @@
                         </div>
                     </div>
 
+                    <!-- RIGHT PANEL: AUTOMATED PERFORMANCE JOURNAL -->
                     <div class="bg-[#1e293b] p-4 rounded border border-[#334155] shadow-sm flex flex-col justify-between">
                         <div class="border-b border-[#334155]/60 pb-2 flex justify-between items-center mb-2">
                             <div class="flex flex-col">
@@ -182,6 +201,7 @@
                 </div>
             </div>
 
+            <!-- RIGHT SIDEBAR COLUMN: INTRADAY COORDINATION MATRIX MANUAL -->
             <div class="bg-[#1e293b] p-4 rounded border border-[#334155] shadow-md flex flex-col space-y-4 xl:sticky xl:top-6">
                 <div class="border-b border-[#334155] pb-2">
                     <h2 class="text-sm font-bold font-mono text-blue-400 uppercase tracking-wider flex items-center space-x-1.5">
@@ -190,6 +210,7 @@
                     <p class="text-[11px] text-slate-300 font-mono mt-0.5 leading-tight font-medium">Dynamic rule adjustments synchronized across session regimes.</p>
                 </div>
 
+                <!-- PHASE 1: OPENING CHAOS -->
                 <div class="bg-[#0f172a] p-3 rounded border border-[#334155]/50 space-y-2">
                     <div class="flex items-center justify-between border-b border-[#334155]/40 pb-1">
                         <span class="text-xs font-bold font-mono text-red-400 flex items-center space-x-1">
@@ -213,6 +234,7 @@
                     </p>
                 </div>
 
+                <!-- PHASE 2: MIDDAY GRIND -->
                 <div class="bg-[#0f172a] p-3 rounded border border-[#334155]/50 space-y-2">
                     <div class="flex items-center justify-between border-b border-[#334155]/40 pb-1">
                         <span class="text-xs font-bold font-mono text-amber-400 flex items-center space-x-1">
@@ -236,6 +258,7 @@
                     </p>
                 </div>
 
+                <!-- PHASE 3: POWER HOUR -->
                 <div class="bg-[#0f172a] p-3 rounded border border-[#334155]/50 space-y-2">
                     <div class="flex items-center justify-between border-b border-[#334155]/40 pb-1">
                         <span class="text-xs font-bold font-mono text-emerald-400 flex items-center space-x-1">
@@ -262,6 +285,7 @@
         </div>
     </div>
 
+    <!-- CORE SIMULATION RUNTIME LOGIC -->
     <script>
         let socket = null;
         let rollingTradeImbalances = []; 
@@ -313,46 +337,69 @@
 
         function initializeWebSocket() {
             const apiKey = document.getElementById('api-key').value.trim();
+            const secretKey = document.getElementById('secret-key').value.trim();
             const ticker = document.getElementById('ticker-input').value.trim().toUpperCase();
 
-            if (!apiKey) {
-                alert("Authorization rejected: Missing Finnhub Private Key value token.");
+            if (!apiKey || !secretKey) {
+                alert("Authorization rejected: Missing Alpaca Key ID or Secret Key token mapping.");
                 return;
             }
 
             if (socket) socket.close();
 
-            statusBadge.innerText = "AUTHENTICATING...";
+            statusBadge.innerText = "CONNECTING...";
             statusBadge.className = "px-3 py-1 text-xs font-mono font-bold uppercase rounded border border-amber-500/30 bg-[#1e293b] text-amber-500";
-            tapeFeed.innerHTML = `<div class="text-slate-300 font-mono">Negotiating network transport channels for symbol: ${ticker}...</div>`;
+            tapeFeed.innerHTML = `<div class="text-slate-300 font-mono">Opening network socket to Alpaca IEX stream for: ${ticker}...</div>`;
             journalFeed.innerHTML = `<div class="text-slate-400">Journal mounted. Standing by to auto-simulate signals...</div>`;
 
-            socket = new WebSocket(`wss://ws.finnhub.io?token=${apiKey}`);
+            // Connect to Alpaca's free tier IEX market data pipeline
+            socket = new WebSocket(`wss://stream.data.alpaca.markets/v2/iex`);
 
             socket.onopen = function() {
-                statusBadge.innerText = `STREAMING // ${ticker}`;
-                statusBadge.className = "px-3 py-1 text-xs font-mono font-bold uppercase rounded border border-emerald-500/30 bg-[#1e293b] text-[#10b981]";
-                tapeStatusDot.className = "h-2.5 w-2.5 rounded-full bg-[#10b981] animate-pulse border border-emerald-700";
-                socket.send(JSON.stringify({'type':'subscribe', 'symbol': ticker}));
-                tapeLogs = [`Websocket channel opened. Connected directly to live prints for: ${ticker}`];
+                statusBadge.innerText = "AUTHENTICATING...";
+                tapeLogs = ["Socket channel open. Negotiating authentication handshake protocol..."];
                 renderTape();
             };
 
             socket.onmessage = function(event) {
                 try {
-                    const payload = JSON.parse(event.data);
-                    
-                    // Route live transactional trades
-                    if (payload.type === 'trade') {
-                        processIncomingTrades(payload.data);
-                    } 
-                    // Capture restriction / permission packets sent from the server
-                    else if (payload.type === 'error') {
-                        tapeLogs.unshift(`<span class="text-red-400 font-bold">[API LIMIT ALERT]</span> ${payload.msg || 'Premium paid tier required for real-time stock websockets.'}`);
-                        renderTape();
-                    }
+                    const data = JSON.parse(event.data);
+                    if (!Array.isArray(data)) return;
+
+                    data.forEach(msg => {
+                        // Handshake Stage 1: Server welcomes client, trigger auth action
+                        if (msg.T === 'success' && msg.msg === 'connected') {
+                            socket.send(JSON.stringify({
+                                action: "auth",
+                                key: apiKey,
+                                secret: secretKey
+                            }));
+                        } 
+                        // Handshake Stage 2: Authentication successful, issue equity trade sub
+                        else if (msg.T === 'success' && msg.msg === 'authenticated') {
+                            statusBadge.innerText = `STREAMING // ${ticker}`;
+                            statusBadge.className = "px-3 py-1 text-xs font-mono font-bold uppercase rounded border border-emerald-500/30 bg-[#1e293b] text-[#10b981]";
+                            tapeStatusDot.className = "h-2.5 w-2.5 rounded-full bg-[#10b981] animate-pulse border border-emerald-700";
+                            
+                            socket.send(JSON.stringify({
+                                action: "subscribe",
+                                trades: [ticker]
+                            }));
+                            tapeLogs = [`System online. Listening to standard market prints for: ${ticker}`];
+                            renderTape();
+                        } 
+                        // Handling Live Order Flow Trades from Alpaca
+                        else if (msg.T === 't') {
+                            processAlpacaTrade(msg);
+                        } 
+                        // Capture and display explicit system error warnings
+                        else if (msg.T === 'error') {
+                            tapeLogs.unshift(`<span class="text-red-400 font-bold">[SERVER REFUSAL]</span> Error code ${msg.code}: ${msg.msg}`);
+                            renderTape();
+                        }
+                    });
                 } catch (e) {
-                    console.error("Payload parse failure:", e);
+                    console.error("Payload breakdown failure:", e);
                 }
             };
 
@@ -363,38 +410,36 @@
             };
         }
 
-        function processIncomingTrades(trades) {
-            trades.forEach(trade => {
-                currentMarketPrice = trade.p;
-                const volume = trade.v;
-                
-                priceHistory.push(currentMarketPrice);
-                if (priceHistory.length > 40) priceHistory.shift(); 
+        function processAlpacaTrade(trade) {
+            // Alpaca Equities map: p = execution price, s = transaction lot share volume
+            currentMarketPrice = trade.p;
+            const volume = trade.s;
+            
+            priceHistory.push(currentMarketPrice);
+            if (priceHistory.length > 40) priceHistory.shift(); 
 
-                let tradeDirection = 0;
-                if (lastPrice !== null) {
-                    if (currentMarketPrice > lastPrice) tradeDirection = 1;      
-                    else if (currentMarketPrice < lastPrice) tradeDirection = -1; 
-                }
-                lastPrice = currentMarketPrice;
+            let tradeDirection = 0;
+            if (lastPrice !== null) {
+                if (currentMarketPrice > lastPrice) tradeDirection = 1;      
+                else if (currentMarketPrice < lastPrice) tradeDirection = -1; 
+            }
+            lastPrice = currentMarketPrice;
 
-                const pressureScore = tradeDirection * volume;
-                rollingTradeImbalances.push(pressureScore);
+            const pressureScore = tradeDirection * volume;
+            rollingTradeImbalances.push(pressureScore);
 
-                if (rollingTradeImbalances.length > 25) rollingTradeImbalances.shift();
+            if (rollingTradeImbalances.length > 25) rollingTradeImbalances.shift();
 
-                if (tradeDirection !== 0) {
-                    const dirLabel = tradeDirection === 1 ? "AGGR_BUY" : "AGGR_SELL";
-                    const color = tradeDirection === 1 ? "text-[#10b981]" : "text-[#ef4444]";
-                    tapeLogs.unshift(`<span class="${color}">[${dirLabel}]</span> ${volume.toLocaleString()} shares cleared at $${currentMarketPrice.toFixed(2)}`);
-                    if (tapeLogs.length > 6) tapeLogs.pop();
-                    renderTape();
-                }
+            if (tradeDirection !== 0) {
+                const dirLabel = tradeDirection === 1 ? "AGGR_BUY" : "AGGR_SELL";
+                const color = tradeDirection === 1 ? "text-[#10b981]" : "text-[#ef4444]";
+                tapeLogs.unshift(`<span class="${color}">[${dirLabel}]</span> ${volume.toLocaleString()} shares cleared at $${currentMarketPrice.toFixed(2)}`);
+                if (tapeLogs.length > 6) tapeLogs.pop();
+                renderTape();
+            }
 
-                livePriceText.innerText = `$${currentMarketPrice.toFixed(2)}`;
-                processVirtualJournalExits();
-            });
-
+            livePriceText.innerText = `$${currentMarketPrice.toFixed(2)}`;
+            processVirtualJournalExits();
             updatePositionMetrics();
             evaluateOrderFlowStrategy();
         }
