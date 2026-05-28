@@ -21,14 +21,11 @@
                     <span class="h-2.5 w-2.5 bg-blue-500 rounded-sm"></span>
                     <h1 class="text-xl font-bold tracking-tight text-[#f8fafc] font-mono">Barbos V8</h1>
                 </div>
-                
             </div>
             <div id="connection-status" class="px-3 py-1 text-xs font-mono font-bold uppercase rounded border border-[#334155] bg-[#1e293b] text-slate-300 transition-all">
                 SYSTEM IDLE // DISCONNECTED
             </div>
         </header>
-
-     
 
         <div class="grid grid-cols-1 xl:grid-cols-4 gap-4 items-start">
             
@@ -40,7 +37,6 @@
                         <div class="space-y-3">
                             <div class="text-xs font-bold font-mono text-blue-400 uppercase tracking-wider flex items-center justify-between">
                                 <span>01 // EXCHANGE LINK</span>
-                                <span class="text-xs text-slate-300"></span>
                             </div>
                             <div>
                                 <label class="block text-xs font-mono font-bold text-slate-200 mb-1.5 uppercase tracking-wide">Finnhub Private Token</label>
@@ -51,7 +47,7 @@
                                 <input type="text" id="ticker-input" value="SOXL" class="w-full bg-[#0f172a] border border-[#334155] rounded px-2.5 py-1.5 text-xs font-mono uppercase font-bold text-[#f8fafc] focus:outline-none focus:border-blue-500 transition-colors" />
                             </div>
                         </div>
-                        <button onclick="initializeWebSocket()" class="w-full bg-blue-600 hover:bg-white-700 text-white font-mono font-medium py-1.5 px-3 rounded text-[11px] tracking-wider transition-colors shadow-sm uppercase mt-4">
+                        <button onclick="initializeWebSocket()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-mono font-medium py-1.5 px-3 rounded text-[11px] tracking-wider transition-colors shadow-sm uppercase mt-4">
                             Mount Data Stream
                         </button>
                     </div>
@@ -74,8 +70,8 @@
 
                     <div class="bg-[#1e293b] p-4 rounded border border-[#334155] space-y-2 shadow-sm flex flex-col justify-between">
                         <div class="space-y-2">
-                            <div class="text-xs font-bold font-mono text-blue-400 uppercase tracking-wider flex items-center justify-between">
-                                <span>03 // Volatiliti Mittigation</span>
+                            <div class="text-xs font-bold font-mono text-red-400 uppercase tracking-wider flex items-center justify-between">
+                                <span>03 // VOLATILITY MITIGATION</span>
                                 <span class="text-xs text-slate-300">AUTO</span>
                             </div>
                             
@@ -280,7 +276,7 @@
         let totalLosses = 0;
         let journalLogs = [];
 
-        // DOM targetfs
+        // DOM targets
         const statusBadge = document.getElementById('connection-status');
         const signalPanel = document.getElementById('signal-panel');
         const signalText = document.getElementById('signal-text');
@@ -343,9 +339,20 @@
             };
 
             socket.onmessage = function(event) {
-                const payload = JSON.parse(event.data);
-                if (payload.type === 'trade') {
-                    processIncomingTrades(payload.data);
+                try {
+                    const payload = JSON.parse(event.data);
+                    
+                    // Route live transactional trades
+                    if (payload.type === 'trade') {
+                        processIncomingTrades(payload.data);
+                    } 
+                    // Capture restriction / permission packets sent from the server
+                    else if (payload.type === 'error') {
+                        tapeLogs.unshift(`<span class="text-red-400 font-bold">[API LIMIT ALERT]</span> ${payload.msg || 'Premium paid tier required for real-time stock websockets.'}`);
+                        renderTape();
+                    }
+                } catch (e) {
+                    console.error("Payload parse failure:", e);
                 }
             };
 
